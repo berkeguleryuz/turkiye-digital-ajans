@@ -54,4 +54,22 @@ export const api = {
     if (!res.ok) throw new Error("Failed to create comment");
     return res.json();
   },
+
+  deletePost: async (id: string) => {
+    const res = await fetch(`${API_URL}/posts/${id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Failed to delete post");
+    return res.json();
+  },
+
+  updatePost: async (id: string, postData: any) => {
+    const res = await fetch(`${API_URL}/posts/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(postData),
+    });
+    if (!res.ok) throw new Error("Failed to update post");
+    return res.json();
+  },
 };

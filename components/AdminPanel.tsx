@@ -22,12 +22,16 @@ import { Dialog } from "./ui/Dialog";
 interface AdminPanelProps {
   posts: BlogPost[];
   onPostCreated: (post: BlogPost) => void;
+  onPostUpdated: (post: BlogPost) => void;
+  onPostDeleted: (postId: string) => void;
   onLogout: () => void;
 }
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({
   posts,
   onPostCreated,
+  onPostUpdated,
+  onPostDeleted,
   onLogout,
 }) => {
   const [activeTab, setActiveTab] = useState<
@@ -65,7 +69,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     author: "Admin",
     tags: "",
     imageUrl: "",
+    color: PALETTE[0],
   });
+
+  const [editingPostId, setEditingPostId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -154,14 +161,32 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         .split(",")
         .map((t) => t.trim())
         .filter((t) => t !== ""),
-      color: PALETTE[Math.floor(Math.random() * PALETTE.length)],
+      color:
+        manualData.color || PALETTE[Math.floor(Math.random() * PALETTE.length)],
       imageUrl: manualData.imageUrl || undefined,
       categoryId: selectedCategoryId || undefined,
     };
 
     try {
-      const createdPost = await api.createPost(newPostData);
-      onPostCreated(createdPost);
+      if (editingPostId) {
+        const updatedPost = await api.updatePost(editingPostId, newPostData);
+        onPostUpdated(updatedPost);
+        setDialog({
+          isOpen: true,
+          title: "GÜNCELLENDİ",
+          message: "İçerik başarıyla güncellendi.",
+          type: "success",
+        });
+      } else {
+        const createdPost = await api.createPost(newPostData);
+        onPostCreated(createdPost);
+        setDialog({
+          isOpen: true,
+          title: "BAŞARILI",
+          message: "İçerik başarıyla yayınlandı.",
+          type: "success",
+        });
+      }
       setActiveTab("DASHBOARD");
       setManualData({
         title: "",
@@ -170,23 +195,57 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         author: "Admin",
         tags: "",
         imageUrl: "",
+        color: PALETTE[0],
       });
       setSelectedCategoryId("");
-      setDialog({
-        isOpen: true,
-        title: "BAŞARILI",
-        message: "İçerik başarıyla yayınlandı.",
-        type: "success",
-      });
+      setEditingPostId(null);
     } catch (error: any) {
-      console.error("Failed to create post", error);
+      console.error("Failed to save post", error);
       setDialog({
         isOpen: true,
         title: "HATA",
-        message: error.message || "İçerik oluşturulamadı.",
+        message: error.message || "İçerik kaydedilemedi.",
         type: "error",
       });
     }
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    if (!confirm("Bu içeriği silmek istediğinize emin misiniz?")) return;
+    try {
+      await api.deletePost(postId);
+      onPostDeleted(postId);
+      setDialog({
+        isOpen: true,
+        title: "SİLİNDİ",
+        message: "İçerik başarıyla silindi.",
+        type: "success",
+      });
+    } catch (error: any) {
+      console.error("Failed to delete post", error);
+      setDialog({
+        isOpen: true,
+        title: "HATA",
+        message: "İçerik silinemedi.",
+        type: "error",
+      });
+    }
+  };
+
+  const handleEditPost = (post: BlogPost) => {
+    setManualData({
+      title: post.title,
+      excerpt: post.excerpt,
+      content: post.content,
+      author: post.author,
+      tags: post.tags.join(", "),
+      imageUrl: post.imageUrl || "",
+      color: post.color,
+    });
+    setSelectedCategoryId(post.categoryId || "");
+    setEditingPostId(post.id);
+    setCreateMode("MANUAL");
+    setActiveTab("CREATE");
   };
 
   const handleCreateCategory = async () => {
@@ -371,13 +430,27 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           {new Date(post.date).toLocaleDateString("tr-TR")}
                         </td>
                         <td className="p-4">
-                          <Link
-                            href={`/blog/${post.slug}`}
-                            target="_blank"
-                            className="inline-flex items-center gap-1 text-sm font-bold hover:text-[#FF00FF]"
-                          >
-                            GÖRÜNTÜLE <ExternalLink size={14} />
-                          </Link>
+                          <div className="flex gap-2">
+                            <Link
+                              href={`/blog/${post.slug}`}
+                              target="_blank"
+                              className="inline-flex items-center gap-1 text-sm font-bold hover:text-[#FF00FF]"
+                            >
+                              <ExternalLink size={14} />
+                            </Link>
+                            <button
+                              onClick={() => handleEditPost(post)}
+                              className="inline-flex items-center gap-1 text-sm font-bold hover:text-[#00FFFF]"
+                            >
+                              <Edit3 size={14} />
+                            </button>
+                            <button
+                              onClick={() => handleDeletePost(post.id)}
+                              className="inline-flex items-center gap-1 text-sm font-bold hover:text-red-600"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -490,6 +563,22 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       />
                     </div>
                     <div>
+                      <label className="block font-bold mb-2">
+                        ÖZET (EXCERPT)
+                      </label>
+                      <textarea
+                        value={manualData.excerpt}
+                        onChange={(e) =>
+                          setManualData({
+                            ...manualData,
+                            excerpt: e.target.value,
+                          })
+                        }
+                        className="w-full h-24 bg-[#f0f0f0] border-2 border-black p-3 font-mono focus:outline-none focus:bg-[#FF00FF] focus:text-white transition-colors"
+                        placeholder="Kısa açıklama..."
+                      />
+                    </div>
+                    <div>
                       <label className="block font-bold mb-2">YAZAR</label>
                       <input
                         type="text"
@@ -551,11 +640,30 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     />
                   </div>
 
+                  <div>
+                    <label className="block font-bold mb-2">RENK SEÇİMİ</label>
+                    <div className="flex gap-4">
+                      {PALETTE.map((color) => (
+                        <button
+                          key={color}
+                          onClick={() =>
+                            setManualData({ ...manualData, color: color })
+                          }
+                          className={`w-12 h-12 border-4 transition-all ${color} ${
+                            manualData.color === color
+                              ? "border-black scale-110 shadow-[4px_4px_0px_0px_#000]"
+                              : "border-transparent opacity-50 hover:opacity-100"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
                   <button
                     onClick={handleManualSubmit}
                     className="w-full bg-black text-white p-4 font-black text-xl hover:bg-[#FF00FF] hover:text-white border-4 border-transparent hover:border-black transition-all uppercase"
                   >
-                    YAYINLA
+                    {editingPostId ? "GÜNCELLE" : "YAYINLA"}
                   </button>
                 </div>
               )}
@@ -685,7 +793,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       <tr>
                         <td
                           colSpan={6}
-                          className="p-8 text-center text-gray-500"
+                          className="p-8 text-center font-mono text-gray-500"
                         >
                           HENÜZ TEKLİF YOK
                         </td>

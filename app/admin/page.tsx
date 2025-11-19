@@ -62,6 +62,16 @@ export default function AdminPage() {
     setPosts([newPost, ...posts]);
   };
 
+  const handlePostUpdated = (updatedPost: BlogPost) => {
+    setPosts(
+      posts.map((post) => (post.id === updatedPost.id ? updatedPost : post))
+    );
+  };
+
+  const handlePostDeleted = (postId: string) => {
+    setPosts(posts.filter((post) => post.id !== postId));
+  };
+
   const handleLogout = () => {
     setIsAuthenticated(false);
     setPassword("");
@@ -137,6 +147,8 @@ export default function AdminPage() {
       <AdminPanel
         posts={posts}
         onPostCreated={handlePostCreated}
+        onPostUpdated={handlePostUpdated}
+        onPostDeleted={handlePostDeleted}
         onLogout={handleLogout}
       />
     </div>

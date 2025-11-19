@@ -47,10 +47,8 @@ export enum ViewState {
 }
 
 export const PALETTE = [
+  "bg-[#CCFF00]",
+  "bg-[#FF00FF]",
+  "bg-[#00FFFF]",
   "bg-[#FF6B6B]",
-  "bg-[#4ECDC4]",
-  "bg-[#FFE66D]",
-  "bg-[#FF9F1C]",
-  "bg-[#C7F464]",
-  "bg-[#D93FD9]",
 ];
