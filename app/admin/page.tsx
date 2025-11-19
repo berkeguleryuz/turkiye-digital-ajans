@@ -7,11 +7,24 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ViewState } from "@/types";
 import { useRouter } from "next/navigation";
+import { Dialog } from "@/components/ui/Dialog";
+import { login } from "../actions";
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [dialog, setDialog] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: "success" | "error" | "info" | "warning";
+  }>({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "info",
+  });
   const router = useRouter();
 
   useEffect(() => {
@@ -30,12 +43,18 @@ export default function AdminPage() {
     }
   }, [isAuthenticated]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === process.env.ADMIN_PASSWORD) {
+    const isValid = await login(password);
+    if (isValid) {
       setIsAuthenticated(true);
     } else {
-      alert("Hatalı şifre!");
+      setDialog({
+        isOpen: true,
+        title: "ERİŞİM REDDEDİLDİ",
+        message: "Hatalı şifre girişi tespit edildi.",
+        type: "error",
+      });
     }
   };
 
@@ -101,6 +120,14 @@ export default function AdminPage() {
             /// HEY! ///
           </div>
         </form>
+
+        <Dialog
+          isOpen={dialog.isOpen}
+          onClose={() => setDialog({ ...dialog, isOpen: false })}
+          title={dialog.title}
+          message={dialog.message}
+          type={dialog.type}
+        />
       </div>
     );
   }

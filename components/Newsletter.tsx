@@ -43,10 +43,6 @@ export const Newsletter: React.FC = () => {
           <h2 className="text-4xl md:text-6xl font-black uppercase mb-4">
             GÜNCEL HABERLERE <span className="text-[#FF00FF]">KATIL</span>
           </h2>
-          <p className="font-mono font-bold text-lg mb-8">
-            Ham güncellemeler al. Spam yok. Sadece kaos ve düzen.
-          </p>
-
           <form
             className="flex flex-col md:flex-row gap-4"
             onSubmit={handleSubmit}

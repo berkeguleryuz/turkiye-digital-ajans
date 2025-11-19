@@ -18,10 +18,27 @@ export const JoinNetwork: React.FC = () => {
   });
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    setTimeout(() => setSubmitted(true), 1000);
+    try {
+      const res = await fetch("/api/proposals", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        alert("Bir hata oluştu. Lütfen tekrar deneyin.");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("Bir hata oluştu. Lütfen tekrar deneyin.");
+    }
   };
 
   if (submitted) {

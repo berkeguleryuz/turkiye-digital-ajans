@@ -28,6 +28,17 @@ export interface BlogPost {
   comments?: Comment[];
 }
 
+export interface Proposal {
+  id: string;
+  name: string;
+  company?: string;
+  email: string;
+  projectType: string;
+  budget: string;
+  status: string;
+  createdAt: string;
+}
+
 export enum ViewState {
   HOME = "HOME",
   POST = "POST",

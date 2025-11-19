@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BlogPost, Category, PALETTE } from "../types";
+import { BlogPost, Category, Proposal, PALETTE } from "../types";
 import { generateBlogPost } from "../services/geminiService";
 import { api } from "../services/api";
 import {
@@ -14,6 +14,7 @@ import {
   Tag,
   Trash2,
   ExternalLink,
+  FileText,
 } from "lucide-react";
 import Link from "next/link";
 import { Dialog } from "./ui/Dialog";
@@ -30,10 +31,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   onLogout,
 }) => {
   const [activeTab, setActiveTab] = useState<
-    "DASHBOARD" | "CREATE" | "CATEGORIES"
+    "DASHBOARD" | "CREATE" | "CATEGORIES" | "PROPOSALS"
   >("DASHBOARD");
 
   const [categories, setCategories] = useState<Category[]>([]);
+  const [proposals, setProposals] = useState<Proposal[]>([]);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
 
@@ -74,8 +76,28 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         console.error("Failed to fetch categories", error);
       }
     };
+
+    const fetchProposals = async () => {
+      try {
+        const res = await fetch("/api/proposals");
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setProposals(data);
+        } else {
+          console.error("Proposals data is not an array:", data);
+          setProposals([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch proposals", error);
+        setProposals([]);
+      }
+    };
+
     fetchCategories();
-  }, []);
+    if (activeTab === "PROPOSALS") {
+      fetchProposals();
+    }
+  }, [activeTab]);
 
   const handleGenerate = async () => {
     if (!topic.trim()) return;
@@ -254,6 +276,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           >
             <Tag size={20} />
             <span>KATEGORİLER</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("PROPOSALS")}
+            className={`w-full flex items-center gap-3 p-4 font-bold border-2 transition-all ${
+              activeTab === "PROPOSALS"
+                ? "bg-white border-black shadow-[4px_4px_0px_0px_#000]"
+                : "bg-white border-transparent hover:border-black hover:bg-gray-50"
+            }`}
+          >
+            <FileText size={20} />
+            <span>TEKLİFLER</span>
           </button>
         </nav>
 
@@ -585,6 +619,80 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     </div>
                   )}
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "PROPOSALS" && (
+          <div className="max-w-6xl mx-auto space-y-8">
+            <div className="border-b-4 border-black pb-6">
+              <h2 className="text-4xl font-black uppercase mb-2">
+                Gelen Teklifler
+              </h2>
+              <p className="font-mono text-gray-600">/// İŞ_GELİŞTİRME</p>
+            </div>
+
+            <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_#000]">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                  <thead className="bg-gray-100 border-b-4 border-black font-mono text-sm uppercase">
+                    <tr>
+                      <th className="p-4 border-r-2 border-black">Tarih</th>
+                      <th className="p-4 border-r-2 border-black">
+                        Kişi/Kurum
+                      </th>
+                      <th className="p-4 border-r-2 border-black">Proje</th>
+                      <th className="p-4 border-r-2 border-black">Bütçe</th>
+                      <th className="p-4 border-r-2 border-black">İletişim</th>
+                      <th className="p-4">Durum</th>
+                    </tr>
+                  </thead>
+                  <tbody className="font-medium">
+                    {proposals.map((prop) => (
+                      <tr
+                        key={prop.id}
+                        className="border-b-2 border-black hover:bg-[#f0f0f0]"
+                      >
+                        <td className="p-4 border-r-2 border-black font-mono text-xs">
+                          {new Date(prop.createdAt).toLocaleDateString("tr-TR")}
+                        </td>
+                        <td className="p-4 border-r-2 border-black">
+                          <div className="font-bold">{prop.name}</div>
+                          {prop.company && (
+                            <div className="text-xs text-gray-500">
+                              {prop.company}
+                            </div>
+                          )}
+                        </td>
+                        <td className="p-4 border-r-2 border-black uppercase font-bold text-sm">
+                          {prop.projectType}
+                        </td>
+                        <td className="p-4 border-r-2 border-black font-mono text-sm">
+                          {prop.budget}
+                        </td>
+                        <td className="p-4 border-r-2 border-black text-sm">
+                          {prop.email}
+                        </td>
+                        <td className="p-4">
+                          <span className="bg-black text-white px-2 py-1 text-xs font-bold">
+                            {prop.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                    {proposals.length === 0 && (
+                      <tr>
+                        <td
+                          colSpan={6}
+                          className="p-8 text-center text-gray-500"
+                        >
+                          HENÜZ TEKLİF YOK
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

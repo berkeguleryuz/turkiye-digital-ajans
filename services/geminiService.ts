@@ -1,9 +1,9 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const apiKey = process.env.NEXT_PUBLIC_API_KEY || process.env.API_KEY;
+const apiKey = process.env.GEMINI_API_KEY;
 
 if (!apiKey) {
-  console.error("API_KEY is missing from environment variables");
+  console.error("GEMINI_API_KEY is missing from environment variables");
 }
 
 const ai = new GoogleGenAI({ apiKey: apiKey || "dummy-key-to-prevent-crash" });
