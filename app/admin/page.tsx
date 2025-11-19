@@ -99,7 +99,7 @@ export default function AdminPage() {
           className="flex flex-col gap-6 p-12 border-4 border-black bg-white shadow-[8px_8px_0px_0px_#000] relative z-10 max-w-md w-full"
         >
           <div className="bg-black text-white inline-block px-4 py-1 font-bold text-sm self-start mb-2">
-            SİSTEM_GİRİŞİ_V.3
+            TÜRKİYE DİGİTAL
           </div>
           <h1 className="text-4xl font-black uppercase leading-none mb-4">
             Yönetim
