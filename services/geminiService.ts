@@ -2,13 +2,62 @@ import { GoogleGenAI, Type } from "@google/genai";
 
 const apiKey = process.env.GEMINI_API_KEY;
 
-if (!apiKey) {
-  console.error("GEMINI_API_KEY is missing from environment variables");
+// API key durumunu kontrol et
+const isApiKeyValid: boolean = !!(apiKey && apiKey !== "PLACEHOLDER_API_KEY" && apiKey.length > 10);
+
+// Sadece geçerli API key varsa client oluştur
+const ai = isApiKeyValid ? new GoogleGenAI({ apiKey }) : null;
+
+export interface GeneratedPost {
+  title: string;
+  excerpt: string;
+  content: string;
+  author: string;
+  tags: string[];
 }
 
-const ai = new GoogleGenAI({ apiKey: apiKey || "dummy-key-to-prevent-crash" });
+/**
+ * Gemini API'nin kullanılabilir olup olmadığını kontrol eder
+ */
+export const isGeminiAvailable = (): boolean => {
+  return isApiKeyValid && ai !== null;
+};
 
-export const generateBlogPost = async (topic: string) => {
+/**
+ * Gemini API durumunu döner (UI'da göstermek için)
+ */
+export const getGeminiStatus = (): { available: boolean; message: string } => {
+  if (!apiKey) {
+    return {
+      available: false,
+      message: "GEMINI_API_KEY ortam değişkeni tanımlanmamış",
+    };
+  }
+  if (apiKey === "PLACEHOLDER_API_KEY") {
+    return {
+      available: false,
+      message: "GEMINI_API_KEY henüz ayarlanmamış",
+    };
+  }
+  if (!isApiKeyValid) {
+    return {
+      available: false,
+      message: "GEMINI_API_KEY geçersiz görünüyor",
+    };
+  }
+  return {
+    available: true,
+    message: "Gemini API hazır",
+  };
+};
+
+export const generateBlogPost = async (topic: string): Promise<GeneratedPost> => {
+  // API kullanılabilirlik kontrolü
+  if (!isApiKeyValid || !ai) {
+    const status = getGeminiStatus();
+    throw new Error(status.message);
+  }
+
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
@@ -35,9 +84,11 @@ export const generateBlogPost = async (topic: string) => {
     if (response.text) {
       return JSON.parse(response.text);
     }
-    throw new Error("No text returned from Gemini");
+    throw new Error("Gemini'den yanıt alınamadı");
   } catch (error) {
-    console.error("Error generating blog post:", error);
-    throw error;
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error("Blog yazısı oluşturulurken bir hata oluştu");
   }
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Marquee } from "@/components/Marquee";
 import { Hero } from "@/components/Hero";
@@ -10,136 +10,137 @@ import { Philosophy } from "@/components/Philosophy";
 import { TechStack } from "@/components/TechStack";
 import { Newsletter } from "@/components/Newsletter";
 import { Footer } from "@/components/Footer";
-import { JoinNetwork } from "@/components/JoinNetwork";
 import { BlogPost, ViewState } from "@/types";
-import { Terminal } from "lucide-react";
+import { api } from "@/services/api";
 
-const api = {
-  getPosts: async () => {
-    const res = await fetch("/api/posts");
-    if (!res.ok) throw new Error("Failed to fetch posts");
-    return res.json();
-  },
+// Boot Sequence Component - Clean & Professional
+const BootSequence = ({ onComplete }: { onComplete: () => void }) => {
+  const [phase, setPhase] = useState(0);
+  const initialized = useRef(false);
 
-  createPost: async (postData: any) => {
-    const res = await fetch("/api/posts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(postData),
-    });
-    if (!res.ok) throw new Error("Failed to create post");
-    return res.json();
-  },
+  useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
 
-  getCategories: async () => {
-    const res = await fetch("/api/categories");
-    if (!res.ok) throw new Error("Failed to fetch categories");
-    return res.json();
-  },
+    // Phase 1: Show logo
+    setTimeout(() => setPhase(1), 100);
 
-  createCategory: async (categoryData: { name: string; slug: string }) => {
-    const res = await fetch("/api/categories", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(categoryData),
-    });
-    if (!res.ok) throw new Error("Failed to create category");
-    return res.json();
-  },
+    // Phase 2: Show text
+    setTimeout(() => setPhase(2), 400);
 
-  getComments: async (postId: string) => {
-    const res = await fetch(`/api/comments/${postId}`);
-    if (!res.ok) throw new Error("Failed to fetch comments");
-    return res.json();
-  },
+    // Phase 3: Exit
+    setTimeout(() => {
+      setPhase(3);
+      setTimeout(onComplete, 400);
+    }, 1400);
+  }, [onComplete]);
 
-  createComment: async (
-    postId: string,
-    commentData: { content: string; author: string }
-  ) => {
-    const res = await fetch(`/api/comments/${postId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(commentData),
-    });
-    if (!res.ok) throw new Error("Failed to create comment");
-    return res.json();
-  },
+  return (
+    <div className="fixed inset-0 bg-black overflow-hidden z-50">
+      {/* Subtle grid */}
+      <div
+        className="absolute inset-0 opacity-[0.02]"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(204, 255, 0, 0.3) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(204, 255, 0, 0.3) 1px, transparent 1px)
+          `,
+          backgroundSize: "60px 60px",
+        }}
+      />
+
+      <div className="relative h-full flex flex-col justify-center items-center p-6">
+        {/* Logo */}
+        <div
+          className={`mb-8 transition-all duration-500 ease-out ${
+            phase >= 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          }`}
+        >
+          <div className="w-20 h-20 border-4 border-[#CCFF00] flex items-center justify-center bg-black">
+            <span className="text-[#CCFF00] text-4xl font-black">TD</span>
+          </div>
+        </div>
+
+        {/* Title */}
+        <h1
+          className={`text-4xl md:text-6xl font-black tracking-tight text-white mb-3 transition-all duration-500 ease-out ${
+            phase >= 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          }`}
+        >
+          TÜRKİYE <span className="text-[#CCFF00]">DİGİTAL</span>
+        </h1>
+
+        {/* Subtitle */}
+        <p
+          className={`text-sm md:text-base text-gray-400 tracking-widest font-mono transition-all duration-500 delay-100 ${
+            phase >= 2 ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          YARATICI TEKNOLOJİ AJANSI
+        </p>
+
+        {/* Loading bar */}
+        <div
+          className={`mt-12 w-48 transition-all duration-300 ${
+            phase >= 2 ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <div className="h-1 bg-gray-800 overflow-hidden">
+            <div
+              className="h-full bg-[#CCFF00] transition-all duration-700 ease-out"
+              style={{ width: phase >= 2 ? "100%" : "0%" }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Exit animation - slide up */}
+      <div
+        className={`absolute inset-0 bg-white transition-all duration-500 ease-in-out ${
+          phase >= 3 ? "translate-y-0" : "translate-y-full"
+        }`}
+      />
+    </div>
+  );
 };
 
 export default function HomePage() {
   const [view, setView] = useState<ViewState>(ViewState.HOME);
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [isBooting, setIsBooting] = useState(true);
-  const [bootLogs, setBootLogs] = useState<string[]>([]);
-
-  // Boot Sequence Animation
-  useEffect(() => {
-    const logs = [
-      "ÇEKİRDEK BAŞLATILIYOR...",
-      "VARLIKLAR YÜKLENİYOR...",
-      "GÜVENLİ BAĞLANTI SAĞLANIYOR...",
-      "SİSTEM HAZIR.",
-    ];
-
-    let delay = 0;
-    logs.forEach((log, index) => {
-      delay += Math.random() * 300 + 100;
-      setTimeout(() => {
-        setBootLogs((prev) => [...prev, log]);
-        if (index === logs.length - 1) {
-          setTimeout(() => setIsBooting(false), 500);
-        }
-      }, delay);
-    });
-  }, []);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const data = await api.getPosts();
-        const formattedPosts = data.map((post: any) => ({
+        const postsArray = Array.isArray(data) ? data : [];
+        const formattedPosts = postsArray.map((post: BlogPost) => ({
           ...post,
           date: new Date(post.date).toLocaleDateString("tr-TR"),
         }));
         setPosts(formattedPosts);
       } catch (error) {
         console.error("Failed to fetch posts:", error);
+        setPosts([]);
       }
     };
     fetchPosts();
   }, []);
 
-  const handleCreatePost = async (newPost: BlogPost) => {
-    try {
-      setPosts([newPost, ...posts]);
-    } catch (error) {
-      console.error("Error updating posts:", error);
-    }
+  const handleCreatePost = (newPost: BlogPost) => {
+    setPosts([newPost, ...posts]);
+  };
+
+  const handleUpdatePost = (updatedPost: BlogPost) => {
+    setPosts(posts.map((post) => (post.id === updatedPost.id ? updatedPost : post)));
+  };
+
+  const handleDeletePost = (postId: string) => {
+    setPosts(posts.filter((post) => post.id !== postId));
   };
 
   if (isBooting) {
-    return (
-      <div className="h-screen w-full bg-black text-[#CCFF00] font-mono p-8 flex flex-col justify-end">
-        <div className="mb-8">
-          <Terminal size={48} className="mb-4" />
-          <h1 className="text-4xl font-black tracking-tighter mb-2">
-            TÜRKİYE_DİJİTAL
-          </h1>
-        </div>
-        <div className="space-y-2">
-          {bootLogs.map((log, i) => (
-            <div
-              key={i}
-              className="border-l-2 border-[#CCFF00] pl-2 animate-in slide-in-from-left-2 duration-200"
-            >
-              {`> ${log}`}
-            </div>
-          ))}
-          <div className="w-4 h-6 bg-[#CCFF00] animate-pulse inline-block"></div>
-        </div>
-      </div>
-    );
+    return <BootSequence onComplete={() => setIsBooting(false)} />;
   }
 
   return (
@@ -164,13 +165,10 @@ export default function HomePage() {
                   </h2>
                   <p className="font-mono mt-2 text-gray-600">/// BLOG</p>
                 </div>
-                <div className="hidden md:block">
-                  <div className="w-4 h-4 bg-red-500 rounded-full animate-ping"></div>
-                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-                {posts.map((post, index) => (
+                {posts.map((post) => (
                   <div key={post.id} className="h-full min-h-[450px]">
                     <BlogCard post={post} />
                   </div>
@@ -188,6 +186,8 @@ export default function HomePage() {
           <AdminPanel
             posts={posts}
             onPostCreated={handleCreatePost}
+            onPostUpdated={handleUpdatePost}
+            onPostDeleted={handleDeletePost}
             onLogout={() => setView(ViewState.HOME)}
           />
         )}

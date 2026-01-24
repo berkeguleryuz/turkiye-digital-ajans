@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { createSlug } from "@/lib/utils";
 
 export async function DELETE(
   request: Request,
@@ -12,6 +13,7 @@ export async function DELETE(
     });
     return NextResponse.json({ message: "Post deleted successfully" });
   } catch (error) {
+    console.error("Failed to delete post:", error);
     return NextResponse.json(
       { error: "Failed to delete post" },
       { status: 500 }
@@ -37,18 +39,7 @@ export async function PUT(
       categoryId,
     } = body;
 
-    const slug =
-      body.slug ||
-      title
-        .toLowerCase()
-        .replace(/ğ/g, "g")
-        .replace(/ü/g, "u")
-        .replace(/ş/g, "s")
-        .replace(/ı/g, "i")
-        .replace(/ö/g, "o")
-        .replace(/ç/g, "c")
-        .replace(/[^a-z0-9\s-]/g, "")
-        .replace(/\s+/g, "-");
+    const slug = body.slug || createSlug(title);
 
     const post = await prisma.post.update({
       where: { id },
@@ -67,6 +58,7 @@ export async function PUT(
 
     return NextResponse.json(post);
   } catch (error) {
+    console.error("Failed to update post:", error);
     return NextResponse.json(
       { error: "Failed to update post" },
       { status: 500 }

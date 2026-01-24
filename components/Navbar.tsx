@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { ViewState } from "../types";
-import { Menu, X, Terminal, Lock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { RiMenuFill, RiCloseFill } from "react-icons/ri";
+
 interface NavbarProps {
   currentView: ViewState;
   setView: (view: ViewState) => void;
@@ -20,12 +21,12 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
           className="cursor-pointer flex items-center gap-3 group"
           onClick={() => setView(ViewState.HOME)}
         >
-          <div className="relative h-10 w-10 border-4 border-black group-hover:rotate-180 transition-transform duration-500 flex items-center justify-center shadow-[4px_4px_0px_0px_#000]">
+          <div className="relative h-10 w-10 border-4 border-black group-hover:scale-125 transition-transform duration-500 flex items-center justify-center shadow-[4px_4px_0px_0px_#000]">
             <Image src="/tdlogo.png" alt="Logo" width={240} height={240} />
           </div>
           <div className="flex flex-col leading-none">
-            <span className="text-2xl font-black tracking-tighter group-hover:text-[#FF00FF] transition-colors uppercase">
-              TÜRKİYE_DİGİTAL
+            <span className="text-2xl font-black tracking-tighter transition-colors uppercase">
+              TÜRKİYE DİGİTAL
             </span>
             <span className="text-[10px] font-mono bg-black text-white px-1 w-max">
               TR
@@ -61,7 +62,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
                 }
             `}
           >
-            PROJE_YAPALIM
+            PROJE YAPALIM
           </Link>
         </div>
 
@@ -69,7 +70,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
           className="md:hidden bg-[#CCFF00] border-4 border-black p-2 shadow-[4px_4px_0px_0px_#000] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          {isMenuOpen ? <RiCloseFill size={24} /> : <RiMenuFill size={24} />}
         </button>
       </div>
 
@@ -92,7 +93,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setView }) => {
             onClick={() => setIsMenuOpen(false)}
             className="text-left text-xl font-black border-4 border-black bg-[#FF00FF] text-white p-4 shadow-[4px_4px_0px_0px_#000] block"
           >
-            PROJE_YAPALIM
+            PROJE YAPALIM
           </Link>
         </div>
       )}

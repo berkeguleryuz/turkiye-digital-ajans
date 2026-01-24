@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { BlogPost, Category, Proposal, PALETTE } from "../types";
-import { generateBlogPost } from "../services/geminiService";
 import { api } from "../services/api";
+import { createSlug } from "../lib/utils";
 import {
-  LayoutDashboard,
-  PenTool,
-  LogOut,
-  ArrowRight,
-  Terminal,
-  Sparkles,
-  Edit3,
-  FolderPlus,
-  Tag,
-  Trash2,
-  ExternalLink,
-  FileText,
-} from "lucide-react";
+  PiHouseDuotone,
+  PiPencilDuotone,
+  PiSignOutDuotone,
+  PiArrowRightBold,
+  PiTerminalWindowDuotone,
+  PiMagicWandDuotone,
+  PiNotePencilDuotone,
+  PiFolderPlusDuotone,
+  PiTagDuotone,
+  PiTrashDuotone,
+  PiArrowSquareOutDuotone,
+  PiFileTextDuotone,
+} from "react-icons/pi";
 import Link from "next/link";
 import { Dialog } from "./ui/Dialog";
 
@@ -111,13 +111,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setIsGenerating(true);
     setGenError(null);
     try {
-      const generatedData = await generateBlogPost(topic);
+      // API endpoint'i kullanarak blog oluştur
+      const response = await fetch("/api/generate-blog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Blog oluşturulamadı");
+      }
+
       const newPostData = {
-        title: generatedData.title,
-        excerpt: generatedData.excerpt,
-        content: generatedData.content,
-        author: generatedData.author || "SYS_ADMIN",
-        tags: generatedData.tags || ["SİSTEM", "OTO"],
+        title: data.title,
+        excerpt: data.excerpt,
+        content: data.content,
+        author: data.author || "SYS_ADMIN",
+        tags: data.tags || ["SİSTEM", "OTO"],
         color: PALETTE[Math.floor(Math.random() * PALETTE.length)],
         imageUrl: customImage || undefined,
         categoryId: selectedCategoryId || undefined,
@@ -130,7 +142,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       setCustomImage("");
       setSelectedCategoryId("");
     } catch (err) {
-      setGenError("NÖRAL_BAĞLANTI_HATASI");
+      const errorMessage = err instanceof Error ? err.message : "NÖRAL_BAĞLANTI_HATASI";
+      setGenError(errorMessage);
     } finally {
       setIsGenerating(false);
     }
@@ -139,16 +152,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const handleManualSubmit = async () => {
     if (!manualData.title || !manualData.content) return;
 
-    const slug = manualData.title
-      .toLowerCase()
-      .replace(/ğ/g, "g")
-      .replace(/ü/g, "u")
-      .replace(/ş/g, "s")
-      .replace(/ı/g, "i")
-      .replace(/ö/g, "o")
-      .replace(/ç/g, "c")
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-");
+    const slug = createSlug(manualData.title);
 
     const newPostData = {
       title: manualData.title,
@@ -251,16 +255,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const handleCreateCategory = async () => {
     if (!newCategoryName.trim()) return;
     try {
-      const slug = newCategoryName
-        .toLowerCase()
-        .replace(/ğ/g, "g")
-        .replace(/ü/g, "u")
-        .replace(/ş/g, "s")
-        .replace(/ı/g, "i")
-        .replace(/ö/g, "o")
-        .replace(/ç/g, "c")
-        .replace(/[^a-z0-9\s-]/g, "")
-        .replace(/\s+/g, "-");
+      const slug = createSlug(newCategoryName);
 
       const newCategory = await api.createCategory({
         name: newCategoryName,
@@ -295,7 +290,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             href="/"
             className="flex items-center gap-2 font-mono font-bold"
           >
-            <Terminal size={20} />
+            <PiTerminalWindowDuotone size={20} />
             <span>Ana Sayfa</span>
           </Link>
         </div>
@@ -309,7 +304,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 : "bg-white border-transparent hover:border-black hover:bg-gray-50"
             }`}
           >
-            <LayoutDashboard size={20} />
+            <PiHouseDuotone size={20} />
             <span>PANEL</span>
           </button>
 
@@ -321,7 +316,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 : "bg-white border-transparent hover:border-black hover:bg-gray-50"
             }`}
           >
-            <PenTool size={20} />
+            <PiPencilDuotone size={20} />
             <span>ÜRETİM</span>
           </button>
 
@@ -333,7 +328,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 : "bg-white border-transparent hover:border-black hover:bg-gray-50"
             }`}
           >
-            <Tag size={20} />
+            <PiTagDuotone size={20} />
             <span>KATEGORİLER</span>
           </button>
 
@@ -345,7 +340,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 : "bg-white border-transparent hover:border-black hover:bg-gray-50"
             }`}
           >
-            <FileText size={20} />
+            <PiFileTextDuotone size={20} />
             <span>TEKLİFLER</span>
           </button>
         </nav>
@@ -355,7 +350,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             onClick={onLogout}
             className="w-full flex items-center justify-center gap-2 p-3 font-bold bg-black text-white hover:bg-red-600 transition-colors"
           >
-            <LogOut size={16} /> ÇIKIŞ
+            <PiSignOutDuotone size={16} /> ÇIKIŞ
           </button>
         </div>
       </aside>
@@ -436,19 +431,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               target="_blank"
                               className="inline-flex items-center gap-1 text-sm font-bold hover:text-[#FF00FF]"
                             >
-                              <ExternalLink size={14} />
+                              <PiArrowSquareOutDuotone size={14} />
                             </Link>
                             <button
                               onClick={() => handleEditPost(post)}
                               className="inline-flex items-center gap-1 text-sm font-bold hover:text-[#00FFFF]"
                             >
-                              <Edit3 size={14} />
+                              <PiNotePencilDuotone size={14} />
                             </button>
                             <button
                               onClick={() => handleDeletePost(post.id)}
                               className="inline-flex items-center gap-1 text-sm font-bold hover:text-red-600"
                             >
-                              <Trash2 size={14} />
+                              <PiTrashDuotone size={14} />
                             </button>
                           </div>
                         </td>
@@ -480,7 +475,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
-                  <Sparkles size={20} /> AI SENTEZLEYİCİ
+                  <PiMagicWandDuotone size={20} /> AI SENTEZLEYİCİ
                 </div>
               </button>
               <button
@@ -492,7 +487,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
-                  <Edit3 size={20} /> MANUEL EDİTÖR
+                  <PiNotePencilDuotone size={20} /> MANUEL EDİTÖR
                 </div>
               </button>
             </div>
@@ -500,6 +495,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <div className="bg-white border-4 border-black p-8 shadow-[8px_8px_0px_0px_#000]">
               {createMode === "AI" ? (
                 <div className="space-y-6">
+                  <div className="bg-gray-100 border-2 border-gray-400 text-gray-700 p-4">
+                    <p className="text-sm font-mono">
+                      AI Sentezleyici, Gemini API kullanarak otomatik içerik üretir.
+                      API anahtarı gereklidir. Alternatif olarak Manuel Editör kullanabilirsiniz.
+                    </p>
+                  </div>
+
                   <div>
                     <label className="block font-bold mb-2">
                       KONU / BAŞLIK
@@ -541,7 +543,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                   {genError && (
                     <div className="bg-red-100 border-2 border-red-500 text-red-600 p-4 font-bold">
-                      HATA: {genError}
+                      <div className="flex items-center gap-2 mb-2">
+                        <span>HATA: {genError}</span>
+                      </div>
+                      <p className="text-sm font-normal mt-2">
+                        Manuel Editör kullanarak içerik oluşturabilirsiniz.
+                      </p>
                     </div>
                   )}
                 </div>
@@ -683,7 +690,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="bg-white border-4 border-black p-6 shadow-[8px_8px_0px_0px_#000]">
                 <h3 className="font-black text-xl uppercase mb-6 flex items-center gap-2">
-                  <FolderPlus size={24} /> Yeni Kategori
+                  <PiFolderPlusDuotone size={24} /> Yeni Kategori
                 </h3>
                 <div className="space-y-4">
                   <div>
@@ -707,7 +714,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
               <div className="bg-white border-4 border-black p-6 shadow-[8px_8px_0px_0px_#000]">
                 <h3 className="font-black text-xl uppercase mb-6 flex items-center gap-2">
-                  <Tag size={24} /> Mevcut Kategoriler
+                  <PiTagDuotone size={24} /> Mevcut Kategoriler
                 </h3>
                 <div className="max-h-[400px] overflow-y-auto space-y-2">
                   {categories.map((cat) => (

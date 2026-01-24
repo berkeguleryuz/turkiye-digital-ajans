@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import {
-  ArrowRight,
-  Check,
-  Rocket,
-  MessageSquare,
-  Briefcase,
-  DollarSign,
-} from "lucide-react";
+  PiRocketLaunchDuotone,
+  PiHandshakeDuotone,
+  PiHeadsetDuotone,
+  PiCheckCircleDuotone,
+  PiArrowRightBold,
+  PiCurrencyCircleDollar,
+} from "react-icons/pi";
+import { TbCurrencyLira } from "react-icons/tb";
 
 export const JoinNetwork: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -45,7 +46,7 @@ export const JoinNetwork: React.FC = () => {
     return (
       <div className="min-h-[80vh] flex items-center justify-center bg-[#F0F0F0] p-4">
         <div className="bg-black text-[#CCFF00] p-8 md:p-16 max-w-2xl text-center border-4 border-black shadow-[16px_16px_0px_0px_#CCFF00]">
-          <Check size={64} className="mx-auto mb-6" />
+          <PiCheckCircleDuotone size={64} className="mx-auto mb-6" />
           <h2 className="text-4xl md:text-6xl font-black uppercase mb-4">
             Teklif Alındı
           </h2>
@@ -76,7 +77,7 @@ export const JoinNetwork: React.FC = () => {
         <div className="flex flex-col lg:flex-row gap-16 items-start">
           <div className="lg:w-1/2 sticky top-24">
             <div className="inline-flex items-center gap-2 bg-black text-white px-3 py-1 font-mono text-xs font-bold mb-6">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
               PROJE ALIMLARI: AÇIK
             </div>
             <h1 className="text-6xl md:text-8xl font-black uppercase leading-[0.85] mb-8 tracking-tighter">
@@ -92,7 +93,7 @@ export const JoinNetwork: React.FC = () => {
             <div className="grid grid-cols-1 gap-4 font-mono text-sm">
               <div className="flex items-center gap-4 border-b-2 border-gray-200 pb-4">
                 <div className="bg-[#CCFF00] p-2 border-2 border-black">
-                  <Rocket size={20} />
+                  <PiRocketLaunchDuotone size={24} />
                 </div>
                 <div>
                   <h3 className="font-bold">HIZLI TESLİMAT</h3>
@@ -103,7 +104,7 @@ export const JoinNetwork: React.FC = () => {
               </div>
               <div className="flex items-center gap-4 border-b-2 border-gray-200 pb-4">
                 <div className="bg-[#4ECDC4] p-2 border-2 border-black">
-                  <Briefcase size={20} />
+                  <PiHandshakeDuotone size={24} />
                 </div>
                 <div>
                   <h3 className="font-bold">ŞEFFAF SÜREÇ</h3>
@@ -114,7 +115,7 @@ export const JoinNetwork: React.FC = () => {
               </div>
               <div className="flex items-center gap-4">
                 <div className="bg-[#FF6B6B] p-2 border-2 border-black">
-                  <MessageSquare size={20} />
+                  <PiHeadsetDuotone size={24} />
                 </div>
                 <div>
                   <h3 className="font-bold">7/24 DESTEK</h3>
@@ -220,9 +221,9 @@ export const JoinNetwork: React.FC = () => {
                       Bütçe Aralığı
                     </label>
                     <div className="relative">
-                      <DollarSign
+                      <TbCurrencyLira
                         className="absolute left-3 top-3.5 text-gray-500"
-                        size={16}
+                        size={18}
                       />
                       <select
                         value={formData.budget}
@@ -243,7 +244,7 @@ export const JoinNetwork: React.FC = () => {
                       type="submit"
                       className="w-full bg-[#FF00FF] text-white font-black text-xl py-4 border-4 border-black shadow-[4px_4px_0px_0px_#000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none hover:bg-black hover:text-white transition-all flex justify-center items-center gap-2"
                     >
-                      TEKLİF İSTE <ArrowRight />
+                      TEKLİF İSTE <PiArrowRightBold size={24} />
                     </button>
                   </div>
                 </form>

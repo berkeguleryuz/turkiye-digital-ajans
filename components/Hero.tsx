@@ -1,8 +1,12 @@
 import React from "react";
-import { MoveRight, LayoutGrid, Award, Briefcase, Users } from "lucide-react";
 import Link from "next/link";
-
 import { ViewState } from "../types";
+import {
+  PiArrowRightBold,
+  PiTrophyDuotone,
+  PiBriefcaseDuotone,
+  PiUsersFourDuotone,
+} from "react-icons/pi";
 
 interface HeroProps {
   setView?: (view: ViewState) => void;
@@ -14,7 +18,7 @@ export const Hero: React.FC<HeroProps> = ({ setView }) => {
       <div className="container mx-auto px-4 pt-20 pb-20 relative z-10">
         <div className="flex justify-between items-center mb-16 border-b-2 border-black pb-4">
           <div className="flex items-center gap-2 font-mono font-bold text-sm">
-            <Award size={16} /> ÖDÜLLÜ TASARIMLAR
+            <PiTrophyDuotone size={18} /> ÖDÜLLÜ TASARIMLAR
           </div>
           <div className="hidden md:block font-mono text-sm bg-black text-white px-2">
             DURUM: PROJE ALIMINA AÇIK
@@ -48,7 +52,10 @@ export const Hero: React.FC<HeroProps> = ({ setView }) => {
               className="group flex items-center gap-4 bg-black text-white text-xl font-bold px-8 py-6 border-4 border-transparent hover:bg-white hover:text-black hover:border-black transition-all neo-brutal-shadow inline-flex"
             >
               PROJENİZİ BAŞLATIN{" "}
-              <MoveRight className="group-hover:translate-x-2 transition-transform" />
+              <PiArrowRightBold
+                size={24}
+                className="group-hover:translate-x-2 transition-transform"
+              />
             </Link>
           </div>
 
@@ -56,7 +63,7 @@ export const Hero: React.FC<HeroProps> = ({ setView }) => {
             <div className="relative w-full aspect-square border-4 border-black p-2 group">
               <div className="absolute inset-0 bg-[#CCFF00] scale-0 group-hover:scale-100 transition-transform origin-bottom-right duration-300"></div>
               <div className="relative z-10 h-full w-full border-2 border-black bg-white flex items-center justify-center flex-col gap-2">
-                <Briefcase size={48} strokeWidth={1.5} />
+                <PiBriefcaseDuotone size={48} />
                 <div className="text-center">
                   <span className="block text-6xl font-black">50+</span>
                   <span className="font-mono text-sm uppercase font-bold">
@@ -69,7 +76,7 @@ export const Hero: React.FC<HeroProps> = ({ setView }) => {
             <div className="bg-gray-100 border-4 border-black p-6 mt-8 font-mono text-sm shadow-[8px_8px_0px_0px_#000]">
               <div className="flex justify-between border-b border-black py-2">
                 <span className="flex items-center gap-2">
-                  <Users size={14} /> MÜŞTERİLER:
+                  <PiUsersFourDuotone size={16} /> MÜŞTERİLER:
                 </span>
                 <span className="font-bold">GLOBAL</span>
               </div>
@@ -87,30 +94,15 @@ export const Hero: React.FC<HeroProps> = ({ setView }) => {
       </div>
 
       <div className="bg-black text-white border-t-4 border-black py-3 overflow-hidden flex">
-        <div className="animate-marquee-full whitespace-nowrap font-mono text-sm flex gap-8 flex-shrink-0">
-          <span>/// STRATEJİK_PLANLAMA</span>
-          <span>/// UI_UX_TASARIM</span>
-          <span>/// FULL_STACK_GELİŞTİRME</span>
-          <span>/// AI_ÇÖZÜMLERİ</span>
-          <span>/// TÜRKİYE_DİJİTAL</span>
-          <span>/// STRATEJİK_PLANLAMA</span>
-          <span>/// UI_UX_TASARIM</span>
-          <span>/// FULL_STACK_GELİŞTİRME</span>
-          <span>/// AI_ÇÖZÜMLERİ</span>
-          <span>/// TÜRKİYE_DİJİTAL</span>
-        </div>
-        <div className="animate-marquee-full whitespace-nowrap font-mono text-sm flex gap-8 flex-shrink-0">
-          <span>/// STRATEJİK_PLANLAMA</span>
-          <span>/// UI_UX_TASARIM</span>
-          <span>/// FULL_STACK_GELİŞTİRME</span>
-          <span>/// AI_ÇÖZÜMLERİ</span>
-          <span>/// TÜRKİYE_DİJİTAL</span>
-          <span>/// STRATEJİK_PLANLAMA</span>
-          <span>/// UI_UX_TASARIM</span>
-          <span>/// FULL_STACK_GELİŞTİRME</span>
-          <span>/// AI_ÇÖZÜMLERİ</span>
-          <span>/// TÜRKİYE_DİJİTAL</span>
-        </div>
+        {[0, 1].map((group) => (
+          <div key={group} className="animate-marquee-full whitespace-nowrap font-mono text-sm flex flex-shrink-0">
+            {["STRATEJİK_PLANLAMA", "UI_UX_TASARIM", "FULL_STACK_GELİŞTİRME", "AI_ÇÖZÜMLERİ", "TÜRKİYE_DİJİTAL",
+              "STRATEJİK_PLANLAMA", "UI_UX_TASARIM", "FULL_STACK_GELİŞTİRME", "AI_ÇÖZÜMLERİ", "TÜRKİYE_DİJİTAL"
+            ].map((item, i) => (
+              <span key={i} className="mx-4">/// {item}</span>
+            ))}
+          </div>
+        ))}
       </div>
     </header>
   );

@@ -1,7 +1,11 @@
 import React from "react";
-import { Mail, MapPin, LayoutGrid } from "lucide-react";
 import { ViewState } from "../types";
-import { BsInstagram, BsLinkedin, BsTwitterX } from "react-icons/bs";
+import {
+  PiMapPinDuotone,
+  PiEnvelopeDuotone,
+  PiSquaresFourDuotone,
+} from "react-icons/pi";
+import { RiInstagramFill, RiTwitterXFill, RiLinkedinFill } from "react-icons/ri";
 
 interface FooterProps {
   setView: (view: ViewState) => void;
@@ -27,7 +31,7 @@ export const Footer: React.FC<FooterProps> = ({ setView }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
           <div className="p-8 border-b-4 md:border-b-0 lg:border-r-4 border-white hover:bg-[#1a1a1a] transition-colors group">
             <div className="mb-4 text-[#CCFF00]">
-              <MapPin size={32} />
+              <PiMapPinDuotone size={32} />
             </div>
             <h3 className="font-bold text-2xl mb-4">MERKEZ</h3>
             <p className="font-mono text-sm opacity-70 leading-relaxed">
@@ -37,7 +41,7 @@ export const Footer: React.FC<FooterProps> = ({ setView }) => {
 
           <div className="p-8 border-b-4 md:border-b-0 lg:border-r-4 border-white hover:bg-[#1a1a1a] transition-colors group">
             <div className="mb-4 text-[#CCFF00]">
-              <Mail size={32} />
+              <PiEnvelopeDuotone size={32} />
             </div>
             <h3 className="font-bold text-2xl mb-4">İLETİŞİM</h3>
             <ul className="font-mono text-sm space-y-4">
@@ -54,7 +58,7 @@ export const Footer: React.FC<FooterProps> = ({ setView }) => {
 
           <div className="p-8 border-b-4 md:border-b-0 lg:border-r-4 border-white hover:bg-[#1a1a1a] transition-colors group">
             <div className="mb-4 text-[#CCFF00]">
-              <LayoutGrid size={32} />
+              <PiSquaresFourDuotone size={32} />
             </div>
             <h3 className="font-bold text-2xl mb-4">KEŞFET</h3>
             <ul className="font-black text-lg space-y-2 uppercase">
@@ -85,19 +89,19 @@ export const Footer: React.FC<FooterProps> = ({ setView }) => {
                   href="#"
                   className="w-12 h-12 border-2 border-white flex items-center justify-center hover:bg-white hover:text-black transition-colors font-bold"
                 >
-                  <BsInstagram />
+                  <RiInstagramFill size={20} />
                 </a>
                 <a
                   href="#"
                   className="w-12 h-12 border-2 border-white flex items-center justify-center hover:bg-white hover:text-black transition-colors font-bold"
                 >
-                  <BsTwitterX />
+                  <RiTwitterXFill size={20} />
                 </a>
                 <a
                   href="#"
                   className="w-12 h-12 border-2 border-white flex items-center justify-center hover:bg-white hover:text-black transition-colors font-bold"
                 >
-                  <BsLinkedin />
+                  <RiLinkedinFill size={20} />
                 </a>
               </div>
             </div>
@@ -107,7 +111,7 @@ export const Footer: React.FC<FooterProps> = ({ setView }) => {
 
       <div className="bg-[#CCFF00] text-black py-4 px-4 border-t-4 border-white">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center font-mono font-bold text-xs md:text-sm">
-          <div>&copy; 2025 TÜRKİYE DİGİTAL AJANSI. TÜM HAKLARI SAKLIDIR.</div>
+          <div>&copy; 2026 TÜRKİYE DİGİTAL AJANSI. TÜM HAKLARI SAKLIDIR.</div>
         </div>
       </div>
     </footer>

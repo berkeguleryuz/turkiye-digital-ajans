@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { createSlug } from "@/lib/utils";
 
 export async function GET() {
   try {
@@ -9,10 +10,9 @@ export async function GET() {
     });
     return NextResponse.json(posts);
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to fetch posts" },
-      { status: 500 }
-    );
+    console.error("Failed to fetch posts:", error);
+    // Hata durumunda boş array dön - client tarafında .map hatası önlenir
+    return NextResponse.json([]);
   }
 }
 
@@ -34,18 +34,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
-    const slug =
-      body.slug ||
-      title
-        .toLowerCase()
-        .replace(/ğ/g, "g")
-        .replace(/ü/g, "u")
-        .replace(/ş/g, "s")
-        .replace(/ı/g, "i")
-        .replace(/ö/g, "o")
-        .replace(/ç/g, "c")
-        .replace(/[^a-z0-9\s-]/g, "")
-        .replace(/\s+/g, "-");
+    const slug = body.slug || createSlug(title);
 
     const post = await prisma.post.create({
       data: {
@@ -63,6 +52,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(post);
   } catch (error) {
+    console.error("Failed to create post:", error);
     return NextResponse.json(
       { error: "Failed to create post" },
       { status: 500 }

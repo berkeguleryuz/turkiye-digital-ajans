@@ -97,7 +97,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
             </div>
 
             {error && (
-              <div className="bg-red-600 text-white font-bold font-mono p-4 border-4 border-red-900 animate-pulse">
+              <div className="bg-red-600 text-white font-bold font-mono p-4 border-4 border-red-900">
                 ERROR: {error}
               </div>
             )}

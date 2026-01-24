@@ -32,9 +32,11 @@ export default function AdminPage() {
       try {
         const res = await fetch("/api/posts");
         const data = await res.json();
-        setPosts(data);
+        // Array olduğundan emin ol
+        setPosts(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Failed to fetch posts", error);
+        setPosts([]);
       }
     };
 
